@@ -56,7 +56,16 @@ import {
       skeleton.animationPropertiesOverride.blendingSpeed = 0.05;
       skeleton.animationPropertiesOverride.loopMode = 1; 
 
+      let idleRange: any = skeleton.getAnimationRange("YBot_Idle");
       let walkRange: any = skeleton.getAnimationRange("YBot_Walk");
+       // let runRange: any = skeleton.getAnimationRange("YBot_Run");
+      //let leftRange: any = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
+      //let rightRange: any = skeleton.getAnimationRange("YBot_RightStrafeWalk");
+
+       //Speed and Rotation Variables
+       let speed: number = 0.03;
+       let speedBackward: number = 0.01;
+       let rotationSpeed = 0.05;
 
       let animating: boolean = false;
   
