@@ -62,12 +62,16 @@ import {
     return box;
   }
 
-  function createTorus(scene: Scene, px: number, py: number, pz: number) {
+  function createTorus(scene: Scene, px: number, py: number, pz: number,sx: number,sy: number, sz: number,rotation: boolean,rx: number,ry: number,rz: number,rs: number) {
     const torus = MeshBuilder.CreateTorus("torus", {});
     torus.position = new Vector3(px, py, pz);
-    scene.registerAfterRender(function () {
-      torus.rotate(new Vector3(4, 8, 2)/*axis*/, 0.02/*angle*/, Space.LOCAL);
-    });
+    torus.scaling = new Vector3(sx, sy, sz)
+    if (rotation){
+      scene.registerAfterRender(function () {
+      torus.rotate(new Vector3(rx, ry, rz)/*axis*/, rs/*angle*/, Space.LOCAL);
+      
+    });}
+    
     return torus;
   }
 
@@ -75,7 +79,7 @@ import {
     const polyhedra = MeshBuilder.CreatePolyhedron("shape", {type: t, size: s}, scene);
     polyhedra.position = new Vector3(px, py, pz);
     scene.registerAfterRender(function () {
-      polyhedra.rotate(new Vector3(4, 8, 2)/*axis*/, 0.02/*angle*/, Space.LOCAL);
+      polyhedra.rotate(new Vector3(0, 8, 0)/*axis*/, 0.02/*angle*/, Space.LOCAL);
     });
     return polyhedra;
   }
@@ -177,11 +181,19 @@ import {
     that.box = createBox(that.scene, -5, 2, 0, 3, 2, 1, true);
 
     
-    that.torus = createTorus(that.scene, 0, 2, 0);
-    that.light = createAnyLight(that.scene, 2, 0, 5, 0, 0.12, 0.64, 0.86, that.torus);
-
+    //that.torus = createTorus(that.scene, 0, 1, 0, 4, 4, 4,false);
+    //that.torus = createTorus(that.scene, 0, 2, 0, 2, 2, 2,false);
+    that.torus = createTorus(that.scene, 0, 5, 0, 3, 1, 3,true,2, 6, 4, 0.06);
+   
     
-    that.polyhedra = createPolyhedra(that.scene, 1, 1, 5, 2, 0);
+    
+    //that.polyhedra = createPolyhedra(that.scene, 1, 1, 0, 5, 0);
+    //that.light = createAnyLight(that.scene,1,)
+
+    that.torus = createTorus(that.scene, 0, 5, 0, 1, 0.5, 1,true,2, 6, 4, 0.02);
+    that.light = createAnyLight(that.scene, 2, 0, 7, 0, 0, 1, 0, that.torus);
+
+
 
     
     that.polyhedra = createPolyhedra(that.scene, 12, 1, 10, 2, 0);
