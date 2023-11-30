@@ -1,5 +1,5 @@
-//import "@babylonjs/core/Debug/debugLayer";
-//import "@babylonjs/inspector";
+import "@babylonjs/core/Debug/debugLayer";
+import "@babylonjs/inspector";
 import {
   Scene,
   ArcRotateCamera,
@@ -27,15 +27,15 @@ function createTerrain(scene: Scene) {
 
   const largeGround = MeshBuilder.CreateGroundFromHeightMap(
     "largeGround",
-    "./src/textures/heightmap.png",
-    { width: 150, height: 150, subdivisions: 400, minHeight: 0, maxHeight: 10 }
+    "./src/textures/villageheightmap.png",
+    { width: 150, height: 150, subdivisions: 20, minHeight: 0, maxHeight: 10 }
   );
   largeGround.material = largeGroundMat;
   return largeGround;
 }
 
 function createSkyBox(scene: Scene) {
-  const skybox = MeshBuilder.CreateBox("skyBox", { size: 300 }, scene);
+  const skybox = MeshBuilder.CreateBox("skyBox", { size: 150 }, scene);
   const skyboxMaterial = new StandardMaterial("skyBox", scene);
   skyboxMaterial.backFaceCulling = false;
   skyboxMaterial.reflectionTexture = new CubeTexture("./src/textures/skybox", scene);
@@ -57,28 +57,23 @@ function createTrees(scene: Scene) {
   //We create trees at random positions
   for (let i = 0; i < 500; i++) {
     const tree = new Sprite("tree", spriteManagerTrees);
-    tree.position.x = Math.random() * -75;
-    tree.position.z = Math.random() * 65 + 10;
+    tree.position.x = Math.random() * -30;
+    tree.position.z = Math.random() * 20 + 8;
     tree.position.y = 0.5;
   }
   for (let i = 0; i < 500; i++) {
     const tree = new Sprite("tree", spriteManagerTrees);
-    tree.position.x = Math.random() * 70 + 5;
-    tree.position.z = Math.random() * 65 + 10;
+    tree.position.x = Math.random() * 25 + 7;
+    tree.position.z = Math.random() * -35 + 8;
     tree.position.y = 0.5;
   }
-  for (let i = 0; i < 700; i++) {
+   for (let i = 0; i < 500; i++) {
     const tree = new Sprite("tree", spriteManagerTrees);
-    tree.position.x = Math.random() * 75;
-    tree.position.z = Math.random() *-80 + 5;
+    tree.position.x = Math.random() * 25 + 10;
+    tree.position.z = Math.random() *30+ 5;
     tree.position.y = 0.5;
   }
-  for (let i = 0; i < 1000; i++) {
-    const tree = new Sprite("tree", spriteManagerTrees);
-    tree.position.x = Math.random() *-75;
-    tree.position.z = Math.random() *-80 + 5;
-    tree.position.y = 0.5;
-  }
+   
   return spriteManagerTrees;
 }
 function createLight(scene: Scene) {
@@ -149,13 +144,13 @@ function cloneHouse(scene: Scene) {
   detached_house.rotation.y = -Math.PI / 16;
   detached_house.position.x = -6.8;
   detached_house.position.z = 2.5;
-  detached_house.position.y = 6.2;
-  //
+  //detached_house.position.y = 6.2;
+
   const semi_house = createHouse(scene, 2); //.clone("clonedHouse");
   semi_house.rotation.y = -Math.PI / 16;
   semi_house.position.x = -4.5;
   semi_house.position.z = 10;
-  semi_house.position.y = 6.2;
+  //semi_house.position.y = 6.2;
 
   //each entry is an array [house type, rotation, x, z]
   const places: number[] [] = []; 
@@ -205,6 +200,14 @@ function createArcRotateCamera(scene: Scene) {
     camTarget,
     scene
   );
+  //Camera restrtaints
+  camera.lowerRadiusLimit = 9;
+  camera.upperRadiusLimit = 25;
+  camera.lowerAlphaLimit = 0;
+  camera.upperAlphaLimit = Math.PI * 2;
+  camera.lowerBetaLimit = 0;
+  camera.upperBetaLimit = Math.PI / 2.02;
+
   camera.attachControl(true);
   return camera;
 }

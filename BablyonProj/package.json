@@ -7,7 +7,15 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "havok": "cp /workspaces/bablyonjsdev/node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm  /workspaces/bablyonjsdev/bablyonproj/node_modules/.vite/deps"
+    "element01build": "tsc && vite build element01",
+    "element01preview": "vite preview element01",
+    "element02build": "tsc && vite build element02",
+    "element02preview": "vite preview element02",
+    "element03build": "tsc && vite build element03",
+    "element03preview": "vite preview element03",
+    "element04build": "tsc && vite build element04",
+    "element04preview": "vite preview element04",
+    "havok": "cp ./../node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm  ./node_modules/.vite/deps"
   },
   "devDependencies": {
     "typescript": "^5.0.2",

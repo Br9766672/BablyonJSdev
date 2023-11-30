@@ -26,6 +26,7 @@ export default function setSceneIndex(i: number )
 {
     eng.runRenderLoop(() => { scenes[i].scene.render();
     });
+    
 }
 
 // let eng = new Engine(canvas, true, {}, true);
