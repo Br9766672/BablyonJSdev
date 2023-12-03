@@ -73,23 +73,27 @@ import {
         let keydown: boolean = false;
         let shiftdown: boolean = false;
         if (keyDownMap["w"] || keyDownMap["ArrowUp"]) {
-          mesh.position.z += 0.1;
-          mesh.rotation.y = 0;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(speed));
+          //mesh.position.z += 0.1;
+          //mesh.rotation.y = 0;
           keydown = true;
         }
         if (keyDownMap["a"] || keyDownMap["ArrowLeft"]) {
-          mesh.position.x -= 0.1;
-          mesh.rotation.y = 3 * Math.PI / 2;
+          mesh.rotate(Vector3.Up(), -rotationSpeed);
+          //mesh.position.x -= 0.1;
+          //mesh.rotation.y = 3 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["s"] || keyDownMap["ArrowDown"]) {
-          mesh.position.z -= 0.1;
-          mesh.rotation.y = 2 * Math.PI / 2;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(-speedBackward));
+          //mesh.position.z -= 0.1;
+          //mesh.rotation.y = 2 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["d"] || keyDownMap["ArrowRight"]) {
-          mesh.position.x += 0.1;
-          mesh.rotation.y = Math.PI / 2;
+          mesh.rotate(Vector3.Up(), rotationSpeed);
+          //mesh.position.x += 0.1;
+          //mesh.rotation.y = Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["Shift"] || keyDownMap["LeftShift"]) {
@@ -152,6 +156,29 @@ import {
     box.position.z = z;
     const boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 1 }, scene);
     return box;
+  }
+
+  function createwall(scene: Scene, x: number, y: number, z: number, sx: number, sy: number, sz: number) {
+    let box: Mesh = MeshBuilder.CreateBox("box", { });
+    box.position.x = x;
+    box.position.y = y;
+    box.position.z = z;
+
+    box.scaling= new Vector3(sx,sy,sz)
+    const wallAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 0 }, scene);
+    return box;
+  }
+
+  function createSphere(scene: Scene,px: number, py: number, pz: number) {
+    
+    let sphere = MeshBuilder.CreateSphere(
+      "sphere",
+      { diameter: 2, segments: 32 },
+      scene,
+    );
+    sphere.position = new Vector3(px, py, pz);
+    const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1 }, scene);  
+    return sphere;
   }
 
   function createSkybox(scene: Scene) {
@@ -232,6 +259,8 @@ import {
       importMesh?: any;
       actionManager?: any;
       box?: Mesh;
+      wall?:Mesh;
+      sphere?:Mesh;
       skybox?: Mesh;
       light?: Light;
       ground?: Mesh;
@@ -241,7 +270,13 @@ import {
     let that: SceneData = { scene: new Scene(engine) };
     //that.scene.debugLayer.show();
     that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
+
     that.box = createBox(that.scene, 2, 2, 2);
+    that.wall = createwall(that.scene, 0, 1, 5, 10, 2, 0.1)
+    that.wall = createwall(that.scene, 0, 1, -5, 10, 2, 0.1)
+    that.wall = createwall(that.scene, 5, 1, 0, 0.1, 2, 10)
+    that.wall = createwall(that.scene, -5, 1, 0, 0.1, 2, 10)
+    that.sphere = createSphere(that.scene, -2, 2,2);
     that.importMesh = importPlayerMesh(that.scene,that.box, 0, 0);
     that.actionManager = actionManager(that.scene);
     that.skybox = createSkybox(that.scene);
