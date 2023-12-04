@@ -83,7 +83,16 @@ import {
       skeleton.animationPropertiesOverride.blendingSpeed = 0.05;
       skeleton.animationPropertiesOverride.loopMode = 1; 
 
+      let idleRange: any = skeleton.getAnimationRange("YBot_Idle");
       let walkRange: any = skeleton.getAnimationRange("YBot_Walk");
+       // let runRange: any = skeleton.getAnimationRange("YBot_Run");
+      //let leftRange: any = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
+      //let rightRange: any = skeleton.getAnimationRange("YBot_RightStrafeWalk");
+
+       //Speed and Rotation Variables
+       let speed: number = 0.03;
+       let speedBackward: number = 0.01;
+       let rotationSpeed = 0.05;
 
       let animating: boolean = false;
   
@@ -91,23 +100,27 @@ import {
         let keydown: boolean = false;
         let shiftdown: boolean = false;
         if (keyDownMap["w"] || keyDownMap["ArrowUp"]) {
-          mesh.position.z += 0.1;
-          mesh.rotation.y = 0;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(speed));
+          //mesh.position.z += 0.1;
+          //mesh.rotation.y = 0;
           keydown = true;
         }
         if (keyDownMap["a"] || keyDownMap["ArrowLeft"]) {
-          mesh.position.x -= 0.1;
-          mesh.rotation.y = 3 * Math.PI / 2;
+          mesh.rotate(Vector3.Up(), -rotationSpeed);
+          //mesh.position.x -= 0.1;
+          //mesh.rotation.y = 3 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["s"] || keyDownMap["ArrowDown"]) {
-          mesh.position.z -= 0.1;
-          mesh.rotation.y = 2 * Math.PI / 2;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(-speedBackward));
+          //mesh.position.z -= 0.1;
+          //mesh.rotation.y = 2 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["d"] || keyDownMap["ArrowRight"]) {
-          mesh.position.x += 0.1;
-          mesh.rotation.y = Math.PI / 2;
+          mesh.rotate(Vector3.Up(), rotationSpeed);
+          //mesh.position.x += 0.1;
+          //mesh.rotation.y = Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["Shift"] || keyDownMap["LeftShift"]) {
@@ -173,8 +186,16 @@ import {
     }
 
     function createSkull(scene: Scene, x: number, y: number, z: number){
-       let skull = SceneLoader.ImportMesh("", "./models/", "skull.babylon")
-    }
+      SceneLoader.ImportMesh("", "./models/", "skull.babylon",scene, function (newMeshes){
+
+      var skull = newMeshes[0]
+      skull.scaling.scaleInPlace(0.01);
+      skull.position.set(x,y,z)
+      const skullAggergate = new PhysicsAggregate(skull,PhysicsShapeType.MESH,{mass: 1},scene)
+      return skull
+      }
+       
+    );}
   
   
     function createSkybox(scene: Scene) {
@@ -254,7 +275,7 @@ import {
         importMesh?: any;
         actionManager?: any;
         box?: Mesh;
-        skull?:Mesh;
+        skull?:any;
         skybox?: Mesh;
         light?: Light;
         ground?: Mesh;
@@ -267,7 +288,7 @@ import {
       let button1 = createSceneButton(that.scene, "lightbut", "Light World", "-100px", "400px", advancedTexture);
       that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
       that.box = createBox(that.scene, 2, 2, 2);
-      //that.skull = createSkull(that.scene,0,0,0);
+      that.skull = createSkull(that.scene,-2,2,2);
       that.importMesh = importPlayerMesh(that.scene,that.box, 0, 0);
       that.actionManager = actionManager(that.scene);
       that.skybox = createSkybox(that.scene);

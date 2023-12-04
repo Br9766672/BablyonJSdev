@@ -74,36 +74,21 @@ import {
         let shiftdown: boolean = false;
         if (keyDownMap["w"] || keyDownMap["ArrowUp"]) {
           mesh.moveWithCollisions(mesh.forward.scaleInPlace(speed));
-          //mesh.position.z += 0.1;
-          //mesh.rotation.y = 0;
           keydown = true;
         }
         if (keyDownMap["a"] || keyDownMap["ArrowLeft"]) {
           mesh.rotate(Vector3.Up(), -rotationSpeed);
-          //mesh.position.x -= 0.1;
-          //mesh.rotation.y = 3 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["s"] || keyDownMap["ArrowDown"]) {
           mesh.moveWithCollisions(mesh.forward.scaleInPlace(-speedBackward));
-          //mesh.position.z -= 0.1;
-          //mesh.rotation.y = 2 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["d"] || keyDownMap["ArrowRight"]) {
           mesh.rotate(Vector3.Up(), rotationSpeed);
-          //mesh.position.x += 0.1;
-          //mesh.rotation.y = Math.PI / 2;
           keydown = true;
         }
-        if (keyDownMap["Shift"] || keyDownMap["LeftShift"]) {
-          currentSpeed = runningSpeed;
-          shiftdown = true;
-        } else {
-          currentSpeed = walkingSpeed;
-          shiftdown = false;
-        }
-
+        
         if (keydown) {
           if (!animating) {
             animating = true;
@@ -163,6 +148,7 @@ import {
     box.position.x = x;
     box.position.y = y;
     box.position.z = z;
+    box.isVisible = false;
 
     box.scaling= new Vector3(sx,sy,sz)
     const wallAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 0 }, scene);
@@ -180,7 +166,17 @@ import {
     const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1 }, scene);  
     return sphere;
   }
-
+  function createCone(scene: Scene,px: number, py: number, pz: number,sx: number,sy: number,sz: number) {
+    let cone = MeshBuilder.CreateCylinder(
+      "cone",
+      { height: 1, diameterBottom: 0.7, diameterTop: 0 },
+      scene
+    );
+    cone.position = new Vector3(px, py, pz)
+    cone.scaling = new Vector3(sx,sy,sz);
+    const coneAggregate = new PhysicsAggregate(cone, PhysicsShapeType.MESH, { mass: 1 }, scene);
+    return cone;
+  }
   function createSkybox(scene: Scene) {
     //Skybox
     const skybox = MeshBuilder.CreateBox("skyBox", {size:150}, scene);
@@ -261,6 +257,7 @@ import {
       box?: Mesh;
       wall?:Mesh;
       sphere?:Mesh;
+      cone?:Mesh;
       skybox?: Mesh;
       light?: Light;
       ground?: Mesh;
@@ -272,11 +269,12 @@ import {
     that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
 
     that.box = createBox(that.scene, 2, 2, 2);
-    that.wall = createwall(that.scene, 0, 1, 5, 10, 2, 0.1)
-    that.wall = createwall(that.scene, 0, 1, -5, 10, 2, 0.1)
-    that.wall = createwall(that.scene, 5, 1, 0, 0.1, 2, 10)
-    that.wall = createwall(that.scene, -5, 1, 0, 0.1, 2, 10)
-    that.sphere = createSphere(that.scene, -2, 2,2);
+    that.wall = createwall(that.scene, 0, 1, 5, 10, 2, 1)
+    that.wall = createwall(that.scene, 0, 1, -5, 10, 2, 1)
+    that.wall = createwall(that.scene, 5, 1, 0, 1, 2, 10)
+    that.wall = createwall(that.scene, -5, 1, 0, 1, 2, 10)
+    that.sphere = createSphere(that.scene, -2, 2, 2);
+    that.cone = createCone(that.scene,-2, 4,-2, 2, 2, 2)
     that.importMesh = importPlayerMesh(that.scene,that.box, 0, 0);
     that.actionManager = actionManager(that.scene);
     that.skybox = createSkybox(that.scene);

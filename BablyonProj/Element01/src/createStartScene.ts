@@ -36,7 +36,7 @@ import {
   
   function createFacedBox(scene: Scene, px: number, py: number, pz: number) {
     const mat = new StandardMaterial("mat");
-    const texture = new Texture("https://assets.babylonjs.com/environments/numbers.jpg");
+    const texture = new Texture("./src/textures/numbers.jpg");
     mat.diffuseTexture = texture;
 
     var columns = 6;
@@ -127,6 +127,14 @@ import {
       scene,
     );
     sphere.position = new Vector3(px, py, pz);
+    sphere.rotation = new Vector3(135,0,0);
+    scene.registerAfterRender(function () {
+      sphere.rotate(new Vector3(0, 2, 0)/*axis*/, 0.02/*angle*/, Space.LOCAL);
+    });
+
+    var spheremat = new StandardMaterial("mat2");
+    spheremat.emissiveTexture = new Texture("./src/textures/Earthmap.jpg", scene);
+    sphere.material = spheremat;
     return sphere;
   }
 

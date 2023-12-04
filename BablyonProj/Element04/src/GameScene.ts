@@ -27,6 +27,7 @@ import {
     BaseCameraMouseWheelInput,
     Sound,
     } from "@babylonjs/core";
+  import * as GUI from "@babylonjs/gui";  
   import HavokPhysics from "@babylonjs/havok";
   import { HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core";
 
@@ -40,13 +41,35 @@ import {
 
   globalThis.HK = await HavokPhysics();
 
+  function createSceneButton(scene: Scene, name: string, index: string, x: string, y: string, advtex) {
+    let button = GUI.Button.CreateSimpleButton(name, index);
+        button.left = x;
+        button.top = y;
+        button.width = "160px";
+        button.height = "60px";
+        button.color = "white";
+        button.cornerRadius = 20;
+        button.background = "green";
+
+        const buttonClick = new Sound("popSound", "./audio/popSound.wav", scene, null, {
+          loop: false,
+          autoplay: false,
+        });
+
+        button.onPointerUpObservable.add(function() {
+            console.log("THE BUTTON HAS BEEN CLICKED");
+            buttonClick.play();
+            createBox(scene,-2,2,2)
+        });
+        advtex.addControl(button);
+        return button;
+ }
+
   let keyDownMap: any[] = [];
   let currentSpeed: number = 0.1;
   let walkingSpeed: number = 0.1;
   let runningSpeed: number = 0.4;
 
-  
-  
   function importPlayerMesh(scene: Scene,collider: Mesh, x: number, y: number) {
     let tempItem = { flag: false } 
     let item = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
@@ -57,7 +80,16 @@ import {
       skeleton.animationPropertiesOverride.blendingSpeed = 0.05;
       skeleton.animationPropertiesOverride.loopMode = 1; 
 
+      let idleRange: any = skeleton.getAnimationRange("YBot_Idle");
       let walkRange: any = skeleton.getAnimationRange("YBot_Walk");
+       // let runRange: any = skeleton.getAnimationRange("YBot_Run");
+      //let leftRange: any = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
+      //let rightRange: any = skeleton.getAnimationRange("YBot_RightStrafeWalk");
+
+       //Speed and Rotation Variables
+       let speed: number = 0.03;
+       let speedBackward: number = 0.01;
+       let rotationSpeed = 0.05;
 
       let animating: boolean = false;
   
@@ -65,33 +97,22 @@ import {
         let keydown: boolean = false;
         let shiftdown: boolean = false;
         if (keyDownMap["w"] || keyDownMap["ArrowUp"]) {
-          mesh.position.z += 0.1;
-          mesh.rotation.y = 0;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(speed));
           keydown = true;
         }
         if (keyDownMap["a"] || keyDownMap["ArrowLeft"]) {
-          mesh.position.x -= 0.1;
-          mesh.rotation.y = 3 * Math.PI / 2;
+          mesh.rotate(Vector3.Up(), -rotationSpeed);
           keydown = true;
         }
         if (keyDownMap["s"] || keyDownMap["ArrowDown"]) {
-          mesh.position.z -= 0.1;
-          mesh.rotation.y = 2 * Math.PI / 2;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(-speedBackward));
           keydown = true;
         }
         if (keyDownMap["d"] || keyDownMap["ArrowRight"]) {
-          mesh.position.x += 0.1;
-          mesh.rotation.y = Math.PI / 2;
+          mesh.rotate(Vector3.Up(), rotationSpeed);
           keydown = true;
         }
-        if (keyDownMap["Shift"] || keyDownMap["LeftShift"]) {
-          currentSpeed = runningSpeed;
-          shiftdown = true;
-        } else {
-          currentSpeed = walkingSpeed;
-          shiftdown = false;
-        }
-
+        
         if (keydown) {
           if (!animating) {
             animating = true;
@@ -194,7 +215,11 @@ import {
       return light;
     }
     
-   
+    function createGround(scene: Scene) {
+      const ground = MeshBuilder.CreateGround("ground", {height: 10, width: 10, subdivisions: 4});
+      const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
+      return ground;
+    }
     
     function createArcRotateCamera(scene: Scene) {
       let camAlpha = -Math.PI / 2,
@@ -221,17 +246,21 @@ import {
         box?: Mesh;
         skybox?: Mesh;
         light?: Light;
+        ground?:Mesh;
         camera?: Camera;
       }
     
       let that: SceneData = { scene: new Scene(engine) };
       //that.scene.debugLayer.show();
       that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
+      let advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", true);
+      let button1 = createSceneButton(that.scene, "but1", "Box", "-500px", "-275px", advancedTexture);
       that.box = createBox(that.scene, 2, 2, 2);
       that.importMesh = importPlayerMesh(that.scene,that.box, 0, 0);
       that.actionManager = actionManager(that.scene);
       that.skybox = createSkybox(that.scene);
       createLight(that.scene);
+      createGround(that.scene);
       createArcRotateCamera(that.scene);
       return that;
     }
