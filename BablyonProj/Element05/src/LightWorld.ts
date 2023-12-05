@@ -179,7 +179,38 @@ import {
       const boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 1 }, scene);
       return box;
     }
+    function createSphere(scene: Scene,px: number, py: number, pz: number) {
+    
+      let sphere = MeshBuilder.CreateSphere(
+        "sphere",
+        { diameter: 2, segments: 32 },
+        scene,
+      );
+      sphere.position = new Vector3(px, py, pz);
+      sphere.rotation = new Vector3(0,0,0);
+      sphere.scaling.scaleInPlace(0.5)
   
+      var spheremat = new StandardMaterial("ballmat");
+      spheremat.diffuseTexture = new Texture("./textures/beachball.jpg", scene);
+      sphere.material = spheremat;
+
+      const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1}, scene)
+      return sphere;
+    }
+
+    function createTrees(scene: Scene) {
+      const spriteManagerTrees = new SpriteManager("treesManager","./textures/palmtree.png",2000,{ width: 512, height: 1024 },scene);
+      //We create trees at random positions
+      for (let i = 0; i < 75; i++) {
+        const tree = new Sprite("tree", spriteManagerTrees);
+        tree.position.x = Math.random() * -29 + 14;
+        tree.position.z = Math.random() * -29 + 14;
+        tree.position.y = 2;
+        tree.size = 4;
+      }
+       
+      return spriteManagerTrees;
+    }
     function createSkybox(scene: Scene) {
       //Skybox
       const skybox = MeshBuilder.CreateBox("skyBox", {size:150}, scene);
@@ -267,6 +298,8 @@ import {
         scene: Scene;
         importMesh?: any;
         actionManager?: any;
+        sphere?: Mesh;
+        trees?: SpriteManager;
         skybox?: Mesh;
         light?: Light;
         ground?: Mesh;
@@ -280,6 +313,8 @@ import {
       that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
       that.importMesh = importPlayerMesh(that.scene, 0, 0);
       that.actionManager = actionManager(that.scene);
+      that.sphere = createSphere(that.scene,2,2,2)
+      that.trees = createTrees(that.scene);
       that.skybox = createSkybox(that.scene);
       createLight(that.scene);
       createGround(that.scene);

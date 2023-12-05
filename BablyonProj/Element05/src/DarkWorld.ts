@@ -73,7 +73,7 @@ import {
 
   
   
-  function importPlayerMesh(scene: Scene,collider: Mesh, x: number, y: number) {
+  function importPlayerMesh(scene: Scene, x: number, y: number) {
     let tempItem = { flag: false } 
     let item = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
       let mesh = newMeshes[0];
@@ -140,9 +140,6 @@ import {
           animating = false;
           scene.stopAnimation(skeleton);
         }
-        if (mesh.intersectsMesh(collider)) {
-          console.log("COLLIDED");
-        }
         
       });
       //item = mesh;
@@ -185,13 +182,35 @@ import {
       return box;
     }
 
-    function createSkull(scene: Scene, x: number, y: number, z: number){
+    function createSkull(scene: Scene, x: number, y: number, z: number, scale: number){
       SceneLoader.ImportMesh("", "./models/", "skull.babylon",scene, function (newMeshes){
 
       var skull = newMeshes[0]
-      skull.scaling.scaleInPlace(0.01);
+      skull.scaling.scaleInPlace(scale);
       skull.position.set(x,y,z)
-      const skullAggergate = new PhysicsAggregate(skull,PhysicsShapeType.MESH,{mass: 1},scene)
+      skull.rotation = new Vector3(Math.random() * 22 + 7,Math.random() *30 + 10 ,Math.random() * 50 + 5)
+
+      const skullAggergate = new PhysicsAggregate(skull,PhysicsShapeType.SPHERE,{mass: 1},scene)
+      return skull
+      }
+       
+    );}
+
+    function createSkullNoPhysics(scene: Scene, x: number, y: number, z: number, scale: number, rx: number, ry: number, rz: number, rotation: boolean){
+      SceneLoader.ImportMesh("", "./models/", "skull.babylon",scene, function (newMeshes){
+
+      var skull = newMeshes[0]
+      skull.scaling.scaleInPlace(scale);
+      skull.position.set(x,y,z)
+      skull.rotation = new Vector3(rx,ry,rz)
+      var rotateSpeedX= Math.random() *3;
+      var rotateSpeedY= Math.random() *4;
+      var rotateSpeedZ= Math.random() *2;
+      if (rotation){
+        scene.registerAfterRender(function () {
+          skull.rotate(new Vector3(rotateSpeedX, rotateSpeedY,rotateSpeedZ)/*axis*/, 0.02/*angle*/, Space.LOCAL);
+      });}
+
       return skull
       }
        
@@ -246,7 +265,7 @@ import {
     }
     
     function createGround(scene: Scene) {
-      const ground = MeshBuilder.CreateGround("ground", {height: 10, width: 10, subdivisions: 4});
+      const ground = MeshBuilder.CreateGround("ground", {height: 30, width: 30, subdivisions: 4});
       ground.isVisible = false;
       const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
       return ground;
@@ -286,6 +305,7 @@ import {
         actionManager?: any;
         box?: Mesh;
         skull?:any;
+        skullNoPhysics?: any;
         skybox?: Mesh;
         light?: Light;
         ground?: Mesh;
@@ -297,9 +317,18 @@ import {
       let advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", true);
       let button1 = createSceneButton(that.scene, "lightbut", "Light World", "-100px", "400px", advancedTexture);
       that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
-      that.box = createBox(that.scene, 2, 2, 2);
-      that.skull = createSkull(that.scene,-2,2,2);
-      that.importMesh = importPlayerMesh(that.scene,that.box, 0, 0);
+      that.skull = createSkull(that.scene,-2,2,2,0.01);
+      that.skull = createSkull(that.scene,4,2,0,0.01);
+      that.skull = createSkull(that.scene,-1,4,2,0.01);
+      that.skull = createSkull(that.scene,4,2,-2,0.01);
+      that.skull = createSkull(that.scene,0,2,-4,0.01);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 0, 8, 20, 0.1,0,0,0, true);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, 20, 0.1, 0, 0, 0, false);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, 20, 0.1, 0, 0, 0, false);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, -20, 0.1, 0, 135, 0, false);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 0, 8, -20, 0.1, 0, 135, 0, true);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, -20, 0.1, 0, 135, 0, false);
+      that.importMesh = importPlayerMesh(that.scene, 0, 0);
       that.actionManager = actionManager(that.scene);
       that.skybox = createSkybox(that.scene);
       createLight(that.scene);
