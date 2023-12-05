@@ -247,6 +247,7 @@ import {
     
     function createGround(scene: Scene) {
       const ground = MeshBuilder.CreateGround("ground", {height: 10, width: 10, subdivisions: 4});
+      ground.isVisible = false;
       const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
       return ground;
     }
@@ -265,6 +266,15 @@ import {
         camTarget,
         scene,
       );
+
+       //Camera restrtaints
+       camera.lowerRadiusLimit = 9;
+       camera.upperRadiusLimit = 25;
+       camera.lowerAlphaLimit = 0;
+       camera.upperAlphaLimit = Math.PI * 2;
+       camera.lowerBetaLimit = 0;
+       camera.upperBetaLimit = Math.PI / 2.02;
+       
       camera.attachControl(true);
       return camera;
     }

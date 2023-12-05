@@ -71,7 +71,7 @@ import {
   let walkingSpeed: number = 0.1;
   let runningSpeed: number = 0.4;
 
-  function importPlayerMesh(scene: Scene,collider: Mesh, x: number, y: number) {
+  function importPlayerMesh(scene: Scene, x: number, y: number) {
     let tempItem = { flag: false } 
     let item = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
       let mesh = newMeshes[0];
@@ -81,7 +81,16 @@ import {
       skeleton.animationPropertiesOverride.blendingSpeed = 0.05;
       skeleton.animationPropertiesOverride.loopMode = 1; 
 
+      let idleRange: any = skeleton.getAnimationRange("YBot_Idle");
       let walkRange: any = skeleton.getAnimationRange("YBot_Walk");
+       // let runRange: any = skeleton.getAnimationRange("YBot_Run");
+      //let leftRange: any = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
+      //let rightRange: any = skeleton.getAnimationRange("YBot_RightStrafeWalk");
+
+       //Speed and Rotation Variables
+       let speed: number = 0.03;
+       let speedBackward: number = 0.01;
+       let rotationSpeed = 0.05;
 
       let animating: boolean = false;
   
@@ -89,23 +98,27 @@ import {
         let keydown: boolean = false;
         let shiftdown: boolean = false;
         if (keyDownMap["w"] || keyDownMap["ArrowUp"]) {
-          mesh.position.z += 0.1;
-          mesh.rotation.y = 0;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(speed));
+          //mesh.position.z += 0.1;
+          //mesh.rotation.y = 0;
           keydown = true;
         }
         if (keyDownMap["a"] || keyDownMap["ArrowLeft"]) {
-          mesh.position.x -= 0.1;
-          mesh.rotation.y = 3 * Math.PI / 2;
+          mesh.rotate(Vector3.Up(), -rotationSpeed);
+          //mesh.position.x -= 0.1;
+          //mesh.rotation.y = 3 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["s"] || keyDownMap["ArrowDown"]) {
-          mesh.position.z -= 0.1;
-          mesh.rotation.y = 2 * Math.PI / 2;
+          mesh.moveWithCollisions(mesh.forward.scaleInPlace(-speedBackward));
+          //mesh.position.z -= 0.1;
+          //mesh.rotation.y = 2 * Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["d"] || keyDownMap["ArrowRight"]) {
-          mesh.position.x += 0.1;
-          mesh.rotation.y = Math.PI / 2;
+          mesh.rotate(Vector3.Up(), rotationSpeed);
+          //mesh.position.x += 0.1;
+          //mesh.rotation.y = Math.PI / 2;
           keydown = true;
         }
         if (keyDownMap["Shift"] || keyDownMap["LeftShift"]) {
@@ -124,9 +137,6 @@ import {
         } else {
           animating = false;
           scene.stopAnimation(skeleton);
-        }
-        if (mesh.intersectsMesh(collider)) {
-          console.log("COLLIDED");
         }
         
       });
@@ -217,7 +227,14 @@ import {
       return light;
     }
     
-   
+    function createGround(scene: Scene) {
+      const ground = MeshBuilder.CreateGround("ground", {height: 30, width: 30, subdivisions: 8});
+      const groundMat = new StandardMaterial("groundMat");
+      groundMat.diffuseTexture = new Texture("./textures/sand.jpg");
+      ground.material = groundMat;
+      const groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
+      return ground;
+    }
     
     function createArcRotateCamera(scene: Scene) {
       let camAlpha = -Math.PI / 2,
@@ -232,6 +249,15 @@ import {
         camTarget,
         scene,
       );
+
+      //Camera restrtaints
+      camera.lowerRadiusLimit = 9;
+      camera.upperRadiusLimit = 25;
+      camera.lowerAlphaLimit = 0;
+      camera.upperAlphaLimit = Math.PI * 2;
+      camera.lowerBetaLimit = 0;
+      camera.upperBetaLimit = Math.PI / 2.02;
+      
       camera.attachControl(true);
       return camera;
     }
@@ -239,8 +265,11 @@ import {
     export default function MenusScene(engine: Engine) {
       interface SceneData {
         scene: Scene;
+        importMesh?: any;
+        actionManager?: any;
         skybox?: Mesh;
         light?: Light;
+        ground?: Mesh;
         camera?: Camera;
       }
     
@@ -248,8 +277,12 @@ import {
       //that.scene.debugLayer.show();
       let advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", true);
       let button1 = createSceneButton(that.scene, "darkbut", "Dark World", "100px", "400px", advancedTexture);
+      that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
+      that.importMesh = importPlayerMesh(that.scene, 0, 0);
+      that.actionManager = actionManager(that.scene);
       that.skybox = createSkybox(that.scene);
       createLight(that.scene);
+      createGround(that.scene);
       createArcRotateCamera(that.scene);
       return that;
     }

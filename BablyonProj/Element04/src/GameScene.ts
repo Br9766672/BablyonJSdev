@@ -41,7 +41,7 @@ import {
 
   globalThis.HK = await HavokPhysics();
 
-  function createSceneButton(scene: Scene, name: string, index: string, x: string, y: string, advtex) {
+  function createSceneButton(scene: Scene, name: string, index: string, x: string, y: string, advtex,spawntype: number) {
     let button = GUI.Button.CreateSimpleButton(name, index);
         button.left = x;
         button.top = y;
@@ -49,7 +49,7 @@ import {
         button.height = "60px";
         button.color = "white";
         button.cornerRadius = 20;
-        button.background = "green";
+        button.background = "Blue";
 
         const buttonClick = new Sound("popSound", "./audio/popSound.wav", scene, null, {
           loop: false,
@@ -59,7 +59,18 @@ import {
         button.onPointerUpObservable.add(function() {
             console.log("THE BUTTON HAS BEEN CLICKED");
             buttonClick.play();
-            createBox(scene,-2,2,2)
+            switch (spawntype){
+
+              case 1://Box
+                createBox(scene,-2,2,2)
+                break
+              case 2://Sphere
+                createSphere(scene,2,2,2)
+                break
+              case 3://cone
+                createCone(scene, -2, 2, -2, 2, 2, 2)  
+
+            }
         });
         advtex.addControl(button);
         return button;
@@ -70,7 +81,7 @@ import {
   let walkingSpeed: number = 0.1;
   let runningSpeed: number = 0.4;
 
-  function importPlayerMesh(scene: Scene,collider: Mesh, x: number, y: number) {
+  function importPlayerMesh(scene: Scene, x: number, y: number) {
     let tempItem = { flag: false } 
     let item = SceneLoader.ImportMesh("", "./models/", "dummy3.babylon", scene, function(newMeshes, particleSystems, skeletons) {
       let mesh = newMeshes[0];
@@ -122,9 +133,7 @@ import {
           animating = false;
           scene.stopAnimation(skeleton);
         }
-        if (mesh.intersectsMesh(collider)) {
-          console.log("COLLIDED");
-        }
+       
         
       });
       //item = mesh;
@@ -160,13 +169,34 @@ import {
       }
     function createBox(scene: Scene, x: number, y: number, z: number) {
       let box: Mesh = MeshBuilder.CreateBox("box", { });
-      box.position.x = x;
-      box.position.y = y;
-      box.position.z = z;
+      box.position = new Vector3(x,y,z)
       const boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 1 }, scene);
       return box;
     }
-  
+
+    function createSphere(scene: Scene,px: number, py: number, pz: number) {
+    
+      let sphere = MeshBuilder.CreateSphere(
+        "sphere",
+        { diameter: 2, segments: 32 },
+        scene,
+      );
+      sphere.position = new Vector3(px, py, pz);
+      const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1 }, scene);  
+      return sphere;
+    }
+    
+    function createCone(scene: Scene,px: number, py: number, pz: number,sx: number,sy: number,sz: number) {
+      let cone = MeshBuilder.CreateCylinder(
+        "cone",
+        { height: 1, diameterBottom: 0.7, diameterTop: 0 },
+        scene
+      );
+      cone.position = new Vector3(px, py, pz)
+      cone.scaling = new Vector3(sx,sy,sz);
+      const coneAggregate = new PhysicsAggregate(cone, PhysicsShapeType.MESH, { mass: 1 }, scene);
+      return cone;
+    }
   
     function createSkybox(scene: Scene) {
       //Skybox
@@ -244,6 +274,8 @@ import {
         importMesh?: any;
         actionManager?: any;
         box?: Mesh;
+        sphere?:Mesh;
+        cone?:Mesh;
         skybox?: Mesh;
         light?: Light;
         ground?:Mesh;
@@ -254,9 +286,10 @@ import {
       //that.scene.debugLayer.show();
       that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
       let advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", true);
-      let button1 = createSceneButton(that.scene, "but1", "Box", "-500px", "-275px", advancedTexture);
-      that.box = createBox(that.scene, 2, 2, 2);
-      that.importMesh = importPlayerMesh(that.scene,that.box, 0, 0);
+      let button1 = createSceneButton(that.scene, "but1", "Box", "-875px", "-375px", advancedTexture,1);
+      let button2 = createSceneButton(that.scene, "but2", "Sphere", "-700px", "-375px", advancedTexture,2);
+      let button3 = createSceneButton(that.scene, "but3", "Cone", "-525px", "-375px", advancedTexture,3);
+      that.importMesh = importPlayerMesh(that.scene, 0, 0);
       that.actionManager = actionManager(that.scene);
       that.skybox = createSkybox(that.scene);
       createLight(that.scene);

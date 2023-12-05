@@ -1,6 +1,6 @@
 import { Engine } from "@babylonjs/core";
-import MenuScene from "./MenuScene";
-import GameScene from "./GameScene";
+import LightWorld from "./LightWorld";
+import Darkworld from "./DarkWorld";
 import './main.css';
 
 const CanvasName = "renderCanvas";
@@ -16,8 +16,8 @@ let scenes: any [] = [];
 
 let eng = new Engine(canvas,true,{}, true);
 
-scenes[0]= MenuScene(eng);
-scenes[1]= GameScene(eng);
+scenes[0]= LightWorld(eng);
+scenes[1]= Darkworld(eng);
 
 scene = scenes[0].scene;
 setSceneIndex(0);
