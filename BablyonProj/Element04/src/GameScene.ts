@@ -62,13 +62,13 @@ import {
             switch (spawntype){
 
               case 1://Box
-                createBox(scene,-2,2,2)
+                createBox(scene,-2,6,2)
                 break
               case 2://Sphere
-                createSphere(scene,2,2,2)
+                createSphere(scene,2,6,2)
                 break
               case 3://cone
-                createCone(scene, -2, 2, -2, 2, 2, 2)  
+                createCone(scene, -2, 6, -2, 2, 2, 2)  
 
             }
         });

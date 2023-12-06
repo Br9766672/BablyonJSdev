@@ -42,7 +42,7 @@ import {
         button.cornerRadius = 20;
         button.background = "white";
 
-        const buttonClick = new Sound("MenuClickSFX", "./audio/menu-click.wav", scene, null, {
+        const buttonClick = new Sound("MenuClickSFX", "./audio/button-click.mp3", scene, null, {
           loop: false,
           autoplay: false,
         });
@@ -323,11 +323,13 @@ import {
       that.skull = createSkull(that.scene,4,2,-2,0.01);
       that.skull = createSkull(that.scene,0,2,-4,0.01);
       that.skullNoPhysics = createSkullNoPhysics(that.scene, 0, 8, 20, 0.1,0,0,0, true);
-      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, 20, 0.1, 0, 0, 0, false);
-      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, 20, 0.1, 0, 0, 0, false);
-      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, -20, 0.1, 0, 135, 0, false);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, 10, 0.1, 0, 0, 0, true);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, 10, 0.1, 0, 0, 0, true);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, 0, 0.1, 0, 270, 0, true);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, -10, 8, -10, 0.1, 0, 135, 0, true);
       that.skullNoPhysics = createSkullNoPhysics(that.scene, 0, 8, -20, 0.1, 0, 135, 0, true);
-      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, -20, 0.1, 0, 135, 0, false);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, -10, 0.1, 0, 135, 0, true);
+      that.skullNoPhysics = createSkullNoPhysics(that.scene, 10, 8, 0, 0.1, 0, 0, 0, true);
       that.importMesh = importPlayerMesh(that.scene, 0, 0);
       that.actionManager = actionManager(that.scene);
       that.skybox = createSkybox(that.scene);

@@ -1,5 +1,3 @@
-import "@babylonjs/core/Debug/debugLayer";
-import "@babylonjs/inspector";
 import {
   Scene,
   ArcRotateCamera,
@@ -226,12 +224,9 @@ export default function createStartScene(engine: Engine) {
   }
 
   let that: SceneData = { scene: new Scene(engine) };
-  that.scene.debugLayer.show();
 
   //housing
   that.house = cloneHouse(that.scene);
-  //that.box = createBox(that.scene);
-  //that.roof = createRoof(that.scene);
 
   that.terrain = createTerrain(that.scene);
   that.light = createLight(that.scene);

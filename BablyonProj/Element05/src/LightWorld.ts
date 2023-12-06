@@ -42,7 +42,7 @@ import {
             button.cornerRadius = 20;
             button.background = "black";
     
-            const buttonClick = new Sound("MenuClickSFX", "./audio/menu-click.wav", scene, null, {
+            const buttonClick = new Sound("MenuClickSFX", "./audio/button-click.mp3", scene, null, {
               loop: false,
               autoplay: false,
             });
@@ -171,12 +171,16 @@ import {
     );
     return scene.actionManager;
       }
-    function createBox(scene: Scene, x: number, y: number, z: number) {
+   
+    function createwall(scene: Scene, x: number, y: number, z: number, sx: number, sy: number, sz: number) {
       let box: Mesh = MeshBuilder.CreateBox("box", { });
       box.position.x = x;
       box.position.y = y;
       box.position.z = z;
-      const boxAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 1 }, scene);
+      box.isVisible = false;
+  
+      box.scaling= new Vector3(sx,sy,sz)
+      const wallAggregate = new PhysicsAggregate(box, PhysicsShapeType.BOX, { mass: 0 }, scene);
       return box;
     }
     function createSphere(scene: Scene,px: number, py: number, pz: number) {
@@ -298,6 +302,7 @@ import {
         scene: Scene;
         importMesh?: any;
         actionManager?: any;
+        wall?:Mesh;
         sphere?: Mesh;
         trees?: SpriteManager;
         skybox?: Mesh;
@@ -313,6 +318,10 @@ import {
       that.scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
       that.importMesh = importPlayerMesh(that.scene, 0, 0);
       that.actionManager = actionManager(that.scene);
+      that.wall = createwall(that.scene,0, 1, 15, 30, 2, 1)
+      that.wall = createwall(that.scene,0, 1, -15, 30, 2, 1)
+      that.wall = createwall(that.scene,15, 1, 0, 1, 2, 30)
+      that.wall = createwall(that.scene,-15, 1, 0, 1, 2, 30)
       that.sphere = createSphere(that.scene,2,2,2)
       that.trees = createTrees(that.scene);
       that.skybox = createSkybox(that.scene);
