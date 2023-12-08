@@ -20,12 +20,12 @@ import {
 function createTerrain(scene: Scene) {
   const largeGroundMat = new StandardMaterial("largeGroundMat");
   largeGroundMat.diffuseTexture = new Texture(
-    "./src/textures/valleygrass.png"
+    "./src/valleygrass.png"
   );
 
   const largeGround = MeshBuilder.CreateGroundFromHeightMap(
     "largeGround",
-    "./src/textures/villageheightmap.png",
+    "./textures/villageheightmap.png",
     { width: 150, height: 150, subdivisions: 20, minHeight: 0, maxHeight: 10 }
   );
   largeGround.material = largeGroundMat;
@@ -36,7 +36,7 @@ function createSkyBox(scene: Scene) {
   const skybox = MeshBuilder.CreateBox("skyBox", { size: 150 }, scene);
   const skyboxMaterial = new StandardMaterial("skyBox", scene);
   skyboxMaterial.backFaceCulling = false;
-  skyboxMaterial.reflectionTexture = new CubeTexture("./src/textures/skybox", scene);
+  skyboxMaterial.reflectionTexture = new CubeTexture("./textures/skybox", scene);
   skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
   skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
   skyboxMaterial.specularColor = new Color3(0, 0, 0);
@@ -47,7 +47,7 @@ function createSkyBox(scene: Scene) {
 function createTrees(scene: Scene) {
   const spriteManagerTrees = new SpriteManager(
     "treesManager",
-    "./src/textures/palmtree.png",
+    "./textures/palmtree.png",
     2000,
     { width: 512, height: 1024 },
     scene
@@ -83,10 +83,10 @@ function createLight(scene: Scene) {
 function createBox(scene: Scene, width: number) {
   const boxMat = new StandardMaterial("boxMat");
   if (width == 2) {
-    boxMat.diffuseTexture = new Texture("./src/textures/semihouse.png") 
+    boxMat.diffuseTexture = new Texture("./textures/semihouse.png") 
   }
   else {
-     boxMat.diffuseTexture = new Texture("./src/textures/cubehouse.png");   
+     boxMat.diffuseTexture = new Texture("./textures/cubehouse.png");   
   }
 
   //options parameter to set different images on each side
@@ -113,7 +113,7 @@ function createBox(scene: Scene, width: number) {
 }
 function createRoof(scene: Scene, width: number) {
   const roofMat = new StandardMaterial("roofMat");
-  roofMat.diffuseTexture = new Texture("./src/textures/roof.jpg");
+  roofMat.diffuseTexture = new Texture("./textures/roof.jpg");
 
   const roof = MeshBuilder.CreateCylinder("roof", {
     diameter: 1.3,

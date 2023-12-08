@@ -36,7 +36,7 @@ import {
   
   function createFacedBox(scene: Scene, px: number, py: number, pz: number) {
     const mat = new StandardMaterial("mat");
-    const texture = new Texture("./src/textures/numbers.jpg");
+    const texture = new Texture("./textures/numbers.jpg");
     mat.diffuseTexture = texture;
 
     var columns = 6;
@@ -133,7 +133,7 @@ import {
     });
 
     var spheremat = new StandardMaterial("mat2");
-    spheremat.emissiveTexture = new Texture("./src/textures/Earthmap.jpg", scene);
+    spheremat.emissiveTexture = new Texture("./textures/Earthmap.jpg", scene);
     sphere.material = spheremat;
     return sphere;
   }

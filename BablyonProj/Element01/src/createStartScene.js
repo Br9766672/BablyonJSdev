@@ -12,7 +12,7 @@ function createBox(scene, px, py, pz, sx, sy, sz, rotation) {
 }
 function createFacedBox(scene, px, py, pz) {
     const mat = new StandardMaterial("mat");
-    const texture = new Texture("./src/textures/numbers.jpg");
+    const texture = new Texture("./textures/numbers.jpg");
     mat.diffuseTexture = texture;
     var columns = 6;
     var rows = 1;
@@ -91,7 +91,7 @@ function createSphere(scene, px, py, pz) {
         sphere.rotate(new Vector3(0, 2, 0), 0.02, Space.LOCAL);
     });
     var spheremat = new StandardMaterial("mat2");
-    spheremat.emissiveTexture = new Texture("./src/textures/Earthmap.jpg", scene);
+    spheremat.emissiveTexture = new Texture("./textures/Earthmap.jpg", scene);
     sphere.material = spheremat;
     return sphere;
 }
