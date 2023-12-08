@@ -20,7 +20,7 @@ import {
 function createTerrain(scene: Scene) {
   const largeGroundMat = new StandardMaterial("largeGroundMat");
   largeGroundMat.diffuseTexture = new Texture(
-    "./src/valleygrass.png"
+    "./textures/valleygrass.png"
   );
 
   const largeGround = MeshBuilder.CreateGroundFromHeightMap(
